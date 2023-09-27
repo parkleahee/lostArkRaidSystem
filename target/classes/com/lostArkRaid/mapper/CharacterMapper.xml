@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.lostArkRaid.mapper.CharacterMapper">
+
+	<insert id="insertCharacter" parameterType="com.lostArkRaid.vo.CharacterVo">
+		    INSERT INTO Maincharacter (
+        characterImage,
+        expeditionLevel,
+        pvpGradeName,
+        townLevel,
+        townName,
+        title,
+        guildMemberGrade,
+        guildName,
+        usingSkillPoint,
+        totalSkillPoint,
+        serverName,
+        characterName,
+        characterLevel,
+        characterClassName,
+        itemAvgLevel,
+        itemMaxLevel
+    ) VALUES (
+        #{characterImage},
+        #{expeditionLevel},
+        #{pvpGradeName},
+        #{townLevel},
+        #{townName},
+        #{title},
+        #{guildMemberGrade},
+        #{guildName},
+        #{usingSkillPoint},
+        #{totalSkillPoint},
+        #{serverName},
+        #{characterName},
+        #{characterLevel},
+        #{characterClassName},
+        #{itemAvgLevel},
+        #{itemMaxLevel}
+    );
+	</insert>
+	<select id="searchUserCharacter" parameterType="string" resultType="com.lostArkRaid.vo.CharacterVo">
+		select * from Maincharacter where characterName =#{characterName};	
+	</select>
+  </mapper>

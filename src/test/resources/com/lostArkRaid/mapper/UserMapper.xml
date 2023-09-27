@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="com.planit.mapper.UserMapper">
+  	<select id="userLogin" parameterType="hashmap" resultType="com.lostArkRaid.vo.UserVo">
+  		select * from t_user where userid = #{userid} and userpw = #{userpw}
+  	</select>
+  	<select id="checkId" parameterType="string" resultType="_int">
+		select count(*) from t_user where userid=#{userid}
+	</select>
+	<insert id="userJoin" parameterType="com.lostArkRaid.vo.UserVo">
+		insert into t_user values (#{userid},#{userpw},#{username},
+		#{userCharacter.characterName})
+	</insert>
+	<select id="findid" parameterType="string" resultType="string">
+		select userid from t_user where userphone=#{phone}
+	</select>
+	<select id="findpw" parameterType="string" resultType="com.lostArkRaid.vo.UserVo">
+		select userpw,useremail from t_user where userid=#{userid}
+	</select>
+	
+  </mapper>
