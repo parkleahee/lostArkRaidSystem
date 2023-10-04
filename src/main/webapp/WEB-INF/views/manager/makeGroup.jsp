@@ -69,18 +69,17 @@
 							<article id="contact">
 								<div class="m_contant">
 								<h2 class="major">그룹 만들기</h2>
-								<form method="post" action="${cp }/group/makeGruopOk">
+								<form method="post" action="${cp }/group/makeGruopOk" name="makeGroup">
 									<div class="fields">
-										<div class="field half" style="width: 80%; display: inline-block;">
-											<label for="name">그룹 이름</label>
-											<input type="text" name="groupName" id="groupName" />
-										</div>
-										<div class="field" style="width: 17%; display: inline-block;">
-											<span id="result"></span>
+										<div class="field">
+											<label for="groupName">그룹 이름</label>
+											<input type="text" name="groupName" id="groupName"  style="width: 80%; display: inline;"/>
+											<input type="button" onclick="checkGroupName()" value="중복확인" style="display: inline;"/>
+											<br>
+											<span id="result">&nbsp;</span>
 										</div>
 										<div class="field half" style="width: 17%; display: inline-block;">
 											<label for="name">&nbsp;</label>
-											<input type="button" onclick="checkGroupName()" value="중복확인"/>
 										</div>
 									</div>
 									<ul class="actions">
@@ -106,6 +105,7 @@
 			<script src="${cp}/resources/assets/js/breakpoints.min.js"></script>
 			<script src="${cp}/resources/assets/js/util.js"></script>
 			<script src="${cp}/resources/assets/js/main.js"></script>
+			<script src="${cp}/resources/js/group.js"></script>
 
 	</body>
 </html>

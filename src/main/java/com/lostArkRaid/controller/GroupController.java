@@ -43,8 +43,9 @@ public class GroupController {
 	}
 	@RequestMapping(value = "/checkGroupName")
 	public ResponseEntity<String> checkGroupName(String groupName, Model model, HttpServletRequest req) {
-		UserVo userVo= (UserVo) req.getAttribute("loginUser");
-		return service.checkGroupName(groupName, userVo.getUserid()) ? new ResponseEntity<String>("O",HttpStatus.OK) : 
+		UserVo userVo= (UserVo) req.getSession().getAttribute("loginUser");
+		System.out.println(userVo);
+		return service.checkGroupName(groupName) ? new ResponseEntity<String>("O",HttpStatus.OK) : 
 			new ResponseEntity<String>("X",HttpStatus.OK) ;
 	}
 	

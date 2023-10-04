@@ -23,20 +23,42 @@ import net.dv8tion.jda.api.events.message.react.MessageReactionAddEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveAllEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEmojiEvent;
 import net.dv8tion.jda.api.events.message.react.MessageReactionRemoveEvent;
+import net.dv8tion.jda.api.events.session.ReadyEvent;
+import net.dv8tion.jda.api.events.thread.ThreadHiddenEvent;
+import net.dv8tion.jda.api.events.thread.ThreadRevealedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.managers.AudioManager;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
+import net.dv8tion.jda.api.utils.concurrent.Task;
 
 import java.nio.ByteBuffer;
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import lombok.Setter;
 
 
 public class DisCordController extends ListenerAdapter{
-
+		List<Guild> guilds;
+		HashMap<Guild, Task<List<Member>>> memberList= new HashMap<>();   
+		//ExecutorService executorService = Executors.newFixedThreadPool(5);
+		
+		  private final Executor taskExecutor;
+		    @Autowired
+		    public DisCordController(Executor taskExecutor) {
+		        this.taskExecutor = taskExecutor;
+		    }
+		
 	    @Override
 	    public void onMessageReceived(MessageReceivedEvent event)
 	    {
@@ -54,6 +76,7 @@ public class DisCordController extends ListenerAdapter{
 	        System.out.println(author.getId());
 	        System.out.println(author.getGlobalName());
 	        System.out.println(author.getAvatarId());
+	        
 	        event.getChannel().sendMessage("test").queue();
 	        // We only want to handle message in Guilds
 	        if (!event.isFromGuild())
@@ -61,55 +84,76 @@ public class DisCordController extends ListenerAdapter{
 	            return;
 	        }
 
-	        if (content.startsWith("!echo "))
+	        if (content.startsWith("!"))
 	        {
-	            String arg = content.substring("!echo ".length());
-	            onEchoCommand(event, guild, arg);
+	        	if (content.equals("!맴버")) {
+	        		
+	        		taskExecutor.execute(() -> getMember(guild));
+
+	        		 
+				}
 	        }
 	        else if (content.equals("!echo"))
 	        {
 	            onEchoCommand(event);
 	        }
 	    }
-	    	
-	    public void onMessageUpdate( MessageUpdateEvent event) {
-	    	System.out.println("test1");
-	    }
-	    public void onMessageDelete(MessageDeleteEvent event) {
-	    	System.out.println("test2");
-	    }
-	    public void onMessageBulkDelete( MessageBulkDeleteEvent event) {
-	    	System.out.println("test3");
-	    }
-	    public void onMessageEmbed( MessageEmbedEvent event) {
-	    	System.out.println("test4");
-	    }
 	    public void onMessageReactionAdd(MessageReactionAddEvent event) {
-	    	System.out.println("test5");
+	        // 이모지 반응을 처리하는 코드
+	    	System.out.println("이모지 테스트");
+	        User user = event.getUser();
+	        MessageReaction reaction = event.getReaction();
+	        String emoji = "";
+
+	        if (user != null && !user.isBot()) {
+	            if (emoji.equals("👍")) {
+	                event.getChannel().sendMessage(user.getAsMention() + " 좋아요를 눌렀네요!").queue();
+	            } else if (emoji.equals("👎")) {
+	                event.getChannel().sendMessage(user.getAsMention() + " 싫어요를 눌렀네요!").queue();
+	            }
+	        }
 	    }
+	    
 	    public void onMessageReactionRemove( MessageReactionRemoveEvent event) {
 	    	System.out.println("test6");
 	    }
-	    public void onMessageReactionRemoveAll(MessageReactionRemoveAllEvent event) {
-	    	System.out.println("test7");
-	    }
-	    public void onMessageReactionRemoveEmoji( MessageReactionRemoveEmojiEvent event) {
-	    	System.out.println("test8");
-	    }
-	  //Emoji Events
-	    public void onEmojiAdded(EmojiAddedEvent event) {
-	    	System.out.println("test9");
-	    }
-	    public void onEmojiRemoved( EmojiRemovedEvent event) {
-	    	System.out.println("tes10");
-	    }
+	    
+	    @Override
+	    public void onReady(ReadyEvent event) {
+	    	System.out.println("check");
+	    	this.guilds = event.getJDA().getGuilds();
 
-	    //Emoji Update Events
-	    public void onEmojiUpdateName(EmojiUpdateNameEvent event) {
-	    	System.out.println("test11");
+	        for (Guild guild : guilds) {
+	            // 모든 멤버를 강제로 로드합니다. (오프라인 멤버 포함)
+	        	this.memberList.put(guild, guild.loadMembers());
+	        	Task<List<Member>> a = guild.loadMembers();
+	            guild.loadMembers().onSuccess(members -> {
+	                System.out.println(guild.getName() + " 서버의 모든 멤버 목록:");
+	                
+	                for (Member member : members) {
+	                    System.out.println("사용자 이름: " + member.getUser().getName());
+	                    System.out.println("사용자 이름: " + member.getUser().getGlobalName());
+	                    System.out.println("사용자 ID: " + member.getUser().getId());
+	                }
+	            });
+	        }
 	    }
-	    public void onEmojiUpdateRoles( EmojiUpdateRolesEvent event) {
-	    	System.out.println("test12");
+	    
+	    public void getMember(Guild guild) {
+	    	
+//	    	memberList.get(guild).onSuccess(members ->{
+//	    	for (Member member : members) {
+//				System.out.println("사용자 이름: " + member.getUser().getName());
+//                System.out.println("사용자 이름: " + member.getUser().getGlobalName());
+//                System.out.println("사용자 ID: " + member.getUser().getId());
+//			}
+//	    });
+	    	List<Member> members = memberList.get(guild).get();
+	    	for (Member member : members) {
+				System.out.println("사용자 이름: " + member.getUser().getName());
+                System.out.println("사용자 이름: " + member.getUser().getGlobalName());
+                System.out.println("사용자 ID: " + member.getUser().getId());
+			}
 	    }
 	/*
 	 * @Override public void onMessageReactionAdd(MessageReactionAddEvent event) {

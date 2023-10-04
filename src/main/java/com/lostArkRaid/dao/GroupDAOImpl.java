@@ -23,10 +23,9 @@ public class GroupDAOImpl implements GroupDAO {
 	
 	
 	@Override
-	public boolean checkGroupName(String groupName, String userid) {
+	public boolean checkGroupName(String groupName) {
 		HashMap<String,String> data = new HashMap<String, String>();
 		data.put("groupName", groupName);
-		data.put("userid", userid);
 		return (Integer)sqlSession.selectOne(namespace+group+"checkGroupName",data)!=1;
 	}
 

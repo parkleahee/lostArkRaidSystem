@@ -32,8 +32,8 @@ public class GroupServiceImpl implements GroupService{
 	GroupDAO gdao = new GroupDAOImpl();
 	
 	@Override
-	public boolean checkGroupName(String groupName, String userid) {
-		return false;
+	public boolean checkGroupName(String groupName) {
+		return gdao.checkGroupName(groupName);
 	}
 
 

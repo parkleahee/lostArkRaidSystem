@@ -4,6 +4,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.lostArkRaid.controller.DisCordController;
 
@@ -14,9 +17,14 @@ import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.cache.CacheFlag;
 
 import java.util.EnumSet;
+import java.util.concurrent.Executor;
 
+
+@EnableAsync
+@EnableScheduling
 @Configuration
 @PropertySource("classpath:com/key.properties")
 public class AppConfig extends ListenerAdapter{
@@ -25,30 +33,54 @@ public class AppConfig extends ListenerAdapter{
 	   private KeyGroup keys;
   	  @Value("${discordkey}")
   	   private String token;
+  	  
+  	  //디스코드 봇 컨트롤러 객체 생성
     @Bean
     public JDA jda() throws Exception {
     
 //      String token = keys.getDiscordkey();
       System.out.println(token);
-//    	String token = "MTE1NTY3NDAyOTgyNzU1OTQ5Ng.Gkce7r.MfA0f4hMsrJ_xU60ypZY-zPhLWvlBtCKuUbV_s";
         EnumSet<GatewayIntent> intents = EnumSet.of(
-            GatewayIntent.GUILD_MESSAGES,
+//            GatewayIntent.GUILD_MESSAGES,
             GatewayIntent.GUILD_VOICE_STATES,
-            GatewayIntent.MESSAGE_CONTENT
+            GatewayIntent.MESSAGE_CONTENT,
+        	GatewayIntent.GUILD_MEMBERS, 
+        	GatewayIntent.GUILD_MESSAGES, 
+        	GatewayIntent.GUILD_MESSAGE_REACTIONS,
+        	GatewayIntent.GUILD_PRESENCES
+        	
         );
-
-        JDA jda = JDABuilder.createDefault(token, intents)
-            .build();
-        jda.getPresence().setStatus(OnlineStatus.ONLINE);
-        jda.addEventListener(new DisCordController());
-
+        
+        EnumSet<CacheFlag> cacheFlags = EnumSet.of(
+                CacheFlag.MEMBER_OVERRIDES,
+                CacheFlag.VOICE_STATE
+            );
+        JDABuilder builder = JDABuilder.createDefault(token);
+        builder.enableIntents(intents);
+        builder.enableCache(cacheFlags);
+        builder.addEventListeners(new DisCordController(taskExecutor()));
+        JDA jda = builder.build();
+//        JDA jda = JDABuilder.createDefault(token, intents)
+//            .build();
+//        jda.getPresence().setStatus(OnlineStatus.ONLINE);
+//        jda.addEventListener(new DisCordController());
         return jda;
     }
 
     
     @Bean
     public ListenerAdapter audioEchoExample() {
-        return new DisCordController();
+        return new DisCordController(taskExecutor());
     }
     
+    //멀티쓰레드 생성
+    @Bean
+    public Executor taskExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(5);
+        executor.setMaxPoolSize(10);
+        executor.setQueueCapacity(25);
+        executor.initialize();
+        return executor;
+    }
 }
