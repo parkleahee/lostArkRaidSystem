@@ -45,6 +45,8 @@ import java.util.concurrent.Executors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.lostArkRaid.service.CertificationService;
+
 import lombok.Setter;
 
 
@@ -52,9 +54,12 @@ public class DisCordController extends ListenerAdapter{
 		List<Guild> guilds;
 		HashMap<Guild, Task<List<Member>>> memberList= new HashMap<>();   
 		//ExecutorService executorService = Executors.newFixedThreadPool(5);
+		@Setter(onMethod_ = @Autowired)
+		  private CertificationService cfservice;
 		
 		  private final Executor taskExecutor;
 		    @Autowired
+
 		    public DisCordController(Executor taskExecutor) {
 		        this.taskExecutor = taskExecutor;
 		    }
@@ -87,9 +92,7 @@ public class DisCordController extends ListenerAdapter{
 	        if (content.startsWith("!"))
 	        {
 	        	if (content.equals("!맴버")) {
-	        		
 	        		taskExecutor.execute(() -> getMember(guild));
-
 	        		 
 				}
 	        }
