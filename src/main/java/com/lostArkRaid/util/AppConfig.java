@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -34,6 +35,20 @@ public class AppConfig extends ListenerAdapter{
   	  @Value("${discordkey}")
   	   private String token;
   	  
+  	 @Autowired
+     private Environment env;
+  	  
+  	private static final String IVkey  = "IV"; // 초기화 벡터. 16byte. 128 bit. 임의값.
+	private static final String encryptionKeykey = "encryptionKey"; // 비밀키. 32byte. 256 bit. 임의값.
+  	
+	//암호화 객체 생성
+	@Bean
+	public EndecryptService endecryptService() {
+		System.out.println(env);
+		EndecryptService endecryptService = new EndecryptImpl(env.getProperty(IVkey),env.getProperty(encryptionKeykey));
+		return endecryptService;
+	}
+	
   	  //디스코드 봇 컨트롤러 객체 생성
     @Bean
     public JDA jda() throws Exception {
@@ -58,20 +73,22 @@ public class AppConfig extends ListenerAdapter{
         JDABuilder builder = JDABuilder.createDefault(token);
         builder.enableIntents(intents);
         builder.enableCache(cacheFlags);
-        builder.addEventListeners(new DisCordController(taskExecutor()));
+        //builder.addEventListeners(new DisCordController(taskExecutor()));
         JDA jda = builder.build();
+        jda.addEventListener(new DisCordController(taskExecutor(),jda));
 //        JDA jda = JDABuilder.createDefault(token, intents)
 //            .build();
 //        jda.getPresence().setStatus(OnlineStatus.ONLINE);
 //        jda.addEventListener(new DisCordController());
+        
         return jda;
     }
 
     
-    @Bean
-    public ListenerAdapter audioEchoExample() {
-        return new DisCordController(taskExecutor());
-    }
+	/*
+	 * @Bean public ListenerAdapter audioEchoExample() { return new
+	 * DisCordController(taskExecutor()); }
+	 */
     
     //멀티쓰레드 생성
     @Bean

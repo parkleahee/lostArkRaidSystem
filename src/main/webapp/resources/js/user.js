@@ -171,6 +171,39 @@ function searchCharacter() {
 }
 
 
+//인증번호 전송
+function centificationSend() {
+	const xhr = new XMLHttpRequest();
+	const result = document.getElementById("result");
+	const discordName = document.joinForm.discordName;
+	if(discordName.value == ""){
+		alert("디스코드 이름을 입력하세요!");
+		discordName.focus();
+		return false;
+	}
+	
+/*	xhr.onreadystatechange = function(){
+		if(xhr.readyState == 4){
+			if(xhr.status == 200){
+				let txt = xhr.responseText;
+				txt = txt.trim();
+				if(txt == "O"){
+					result.innerHTML = "사용할 수 있는 아이디입니다!";
+					document.joinForm.userpw.focus();
+				}
+				else{
+					result.innerHTML = "중복된 아이디가 있습니다!";
+					userid.value = "";
+					userid.focus();
+				}
+			}
+		}
+	}*/
+	
+	xhr.open("GET",cp+"/user/centificationSend?discordName="+discordName.value,true);
+	xhr.send();
+}
+
 
 
 

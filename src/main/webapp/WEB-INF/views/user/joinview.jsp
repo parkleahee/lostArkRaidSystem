@@ -210,6 +210,10 @@
                     </td>
                 </tr>
                 <tr>
+                    <th><label for="discordName">DiscordName</label></th>
+                    <td><input type="text" name="discordName" id="discordName"><input type="button" value="인증번호 발송" onclick="centificationSend()"></td>
+                </tr>
+                <tr>
                     <th colspan="2">
                         <input type="submit" value="가입 완료">
                         <!-- <button></button> input:submit -->

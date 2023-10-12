@@ -1,8 +1,10 @@
 package com.lostArkRaid.controller;
 
+import java.security.SecureRandom;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,11 +23,16 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.lostArkRaid.service.CertificationService;
 import com.lostArkRaid.service.UserService;
+import com.lostArkRaid.util.ContextUtil;
 import com.lostArkRaid.vo.CharacterVo;
 import com.lostArkRaid.vo.UserVo;
 
 
 import lombok.Setter;
+import net.dv8tion.jda.api.JDA;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.User;
 
 /**
  * Handles requests for the application home page.
@@ -71,6 +78,19 @@ public class UserController {
 	public ResponseEntity<CharacterVo> choiceCharcater(String characterName,String userApiKey,Model model) {
 		CharacterVo cvar = cfservice.searchCharacter(userApiKey, characterName);
 		return new ResponseEntity<CharacterVo>(cvar,HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/centificationSend")
+	public void centificationSend(String discordName) {
+		service.centificationSend(discordName);
+       
+	}
+	
+	@RequestMapping(value = "/centificationOk")
+	public ResponseEntity<String> centificationOk(String discordName,String centificationCode,Model model) {
+		boolean discordCentification = service.discordCentification(discordName,centificationCode);
+		String check = discordCentification? "O" : "X";
+		return new ResponseEntity<>(check,HttpStatus.OK);
 	}
 	
 	

@@ -58,4 +58,9 @@ public class UserDAOImpl implements UserDAO {
 		return sqlSession.selectOne(namespace+user + "findpw", userid);
 	}
 
+	@Override
+	public void centificationCode(String discordName, String randomHexString) {
+		// TODO Auto-generated method stub
+		
+	}
 }

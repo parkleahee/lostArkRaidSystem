@@ -17,8 +17,11 @@
 	<select id="findid" parameterType="string" resultType="string">
 		select userid from t_user where userphone=#{phone}
 	</select>
-	<select id="findpw" parameterType="string" resultType="com.lostArkRaid.vo.UserVo">
+	<select id="findpw" parameterType="string" resultType="string">
 		select userpw,useremail from t_user where userid=#{userid}
+	</select>
+	<select id="getApikey" parameterType="string" resultType="string">
+		select userApiKey from t_user where discordid=#{name}
 	</select>
 	
   </mapper>

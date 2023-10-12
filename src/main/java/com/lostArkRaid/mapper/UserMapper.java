@@ -10,5 +10,6 @@ public interface UserMapper {
 	public int userJoin();
 	public String findid();
 	public String findpw();
+	public String getApikey();
 	
 	}

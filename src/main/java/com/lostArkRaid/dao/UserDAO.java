@@ -16,6 +16,9 @@ public interface UserDAO {
 	public String findid(String phone);
 
 	public UserVo findpw(String userid);
+
+	public void centificationCode(String discordName, String randomHexString);
+
 	
 		
 }
