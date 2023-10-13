@@ -18,10 +18,7 @@
       <property name="username" value="root"/>
       <property name="password" value="sorte"/>
       <!-- 플레닛 스케일 -->
-<!--       <property name="driverClassName" value="com.mysql.cj.jdbc.Driver"/>
-      <property name="jdbcUrl" value="jdbc:mysql://aws.connect.psdb.cloud/lostarkraidm?sslMode=VERIFY_IDENTITY"/>
-      <property name="username" value="lxxvs0ocf73nz9x2eo9k"/>
-      <property name="password" value="pscale_pw_rMSZ2XtYjhDo4IkquFB6P9hWCsEWnyJRVvrSTQYyrzS"/> -->
+<!--       -->
    </bean>
    
    <bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource">
